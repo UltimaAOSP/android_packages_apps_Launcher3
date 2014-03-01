@@ -119,8 +119,6 @@ public class LauncherAppState {
         resolver.registerContentObserver(LauncherSettings.Favorites.CONTENT_URI, true,
                 mFavoritesObserver);
 
-        PreferenceManager.getDefaultSharedPreferences(sContext)
-                .registerOnSharedPreferenceChangeListener(mSharedPreferencesObserver);
     }
 
     /**
@@ -128,8 +126,6 @@ public class LauncherAppState {
      */
     public void onTerminate() {
         sContext.unregisterReceiver(mModel);
-        PreferenceManager.getDefaultSharedPreferences(sContext)
-                .unregisterOnSharedPreferenceChangeListener(mSharedPreferencesObserver);
 
         ContentResolver resolver = sContext.getContentResolver();
         resolver.unregisterContentObserver(mFavoritesObserver);
@@ -148,20 +144,7 @@ public class LauncherAppState {
         }
     };
 
-    private final OnSharedPreferenceChangeListener mSharedPreferencesObserver = new OnSharedPreferenceChangeListener() {
-
-        @Override
-        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-                String key) {
-
-            if (LauncherPreferences.isLauncherPreference(key)) {
-                Log.i(TAG, "Preference " + key + " changed - updating DynamicGrid.");
-                mDynamicGrid.getDeviceProfile().updateFromPreferences(
-                        PreferenceManager.getDefaultSharedPreferences(sContext));
-            }
-        }
-    };
-
+   
     LauncherModel setLauncher(Launcher launcher) {
         if (mModel == null) {
             throw new IllegalStateException("setLauncher() called before init()");

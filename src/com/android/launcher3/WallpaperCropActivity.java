@@ -20,6 +20,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.WallpaperManager;
 import android.content.Context;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -37,6 +38,7 @@ import android.graphics.RectF;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.FloatMath;
 import android.util.Log;
 import android.view.Display;
@@ -72,21 +74,23 @@ public class WallpaperCropActivity extends Activity {
 
     protected CropView mCropView;
     protected Uri mUri;
+    
+    private ContentResolver cr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        init();
+        init(this);
         if (!enableRotation()) {
             setRequestedOrientation(Configuration.ORIENTATION_PORTRAIT);
         }
     }
 
-    protected void init() {
+    protected void init(Context context) {
         setContentView(R.layout.wallpaper_cropper);
 
         mCropView = (CropView) findViewById(R.id.cropView);
-
+        cr = context.getContentResolver();
         Intent cropIntent = getIntent();
         final Uri imageUri = cropIntent.getData();
 
@@ -114,7 +118,7 @@ public class WallpaperCropActivity extends Activity {
     }
 
     public boolean enableRotation() {
-        return getResources().getBoolean(R.bool.allow_rotation);
+        return Settings.System.getInt(cr, "pref_key_enableRotation", 0) != 0;
     }
 
     public static String getSharedPreferencesKey() {

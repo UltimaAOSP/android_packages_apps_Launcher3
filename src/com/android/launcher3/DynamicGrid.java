@@ -18,6 +18,7 @@ package com.android.launcher3;
 
 import android.appwidget.AppWidgetHostView;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -26,6 +27,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -33,6 +35,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
+
+import com.android.launcher3.LauncherApplication;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -98,6 +102,8 @@ class DeviceProfile {
     int searchBarSpaceHeightPx;
     private int searchBarHeightPx;
     int pageIndicatorHeightPx;
+    
+    ContentResolver cr;
 
     DeviceProfile(String n, float w, float h, float r, float c,
                   float is, float its, float hs, float his) {
@@ -130,7 +136,7 @@ class DeviceProfile {
                 resources.getBoolean(R.bool.hotseat_transpose_layout_with_orientation);
         minWidthDps = minWidth;
         minHeightDps = minHeight;
-
+        cr = context.getContentResolver();
         ComponentName cn = new ComponentName(context.getPackageName(),
                 this.getClass().getName());
         defaultWidgetPadding = AppWidgetHostView.getDefaultPaddingForWidget(context, cn, null);
@@ -251,17 +257,18 @@ class DeviceProfile {
     }
 
     void updateFromPreferences(SharedPreferences prefs) {
-        int prefNumColumns = prefs.getInt(LauncherPreferences.KEY_WORKSPACE_COLS, 0);
+        int prefNumColumns = Settings.System.getInt(cr, "pref_key_workspaceCols", 0);
         if(prefNumColumns > 0) {
             numColumns = prefNumColumns;
         }
 
-        int prefNumRows = prefs.getInt(LauncherPreferences.KEY_WORKSPACE_ROWS, 0);
+        int prefNumRows = Settings.System.getInt(cr, "pref_key_workspaceRows", 0);
         if(prefNumRows > 0) {
             numRows = prefNumRows;
         }
 
-        showSearchBar = prefs.getBoolean(LauncherPreferences.KEY_SHOW_SEARCHBAR, true);
+        showSearchBar = Settings.System.getInt(cr, "pref_key_showSearchBar", 1) != 0;
+        
         if(showSearchBar) {
             searchBarSpaceHeightPx = searchBarHeightPx + 2 * edgeMarginPx;
         }

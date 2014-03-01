@@ -17,6 +17,7 @@
 package com.android.launcher3;
 
 import android.app.Application;
+import android.content.Context;
 
 public class LauncherApplication extends Application {
     @Override
@@ -30,5 +31,9 @@ public class LauncherApplication extends Application {
     public void onTerminate() {
         super.onTerminate();
         LauncherAppState.getInstance().onTerminate();
+    }
+    
+    public static Context getContext(){
+        return getContext();
     }
 }

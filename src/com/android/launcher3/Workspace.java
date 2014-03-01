@@ -30,6 +30,7 @@ import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -46,6 +47,7 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -82,6 +84,8 @@ public class Workspace extends SmoothPagedView
         DragController.DragListener, LauncherTransitionable, ViewGroup.OnHierarchyChangeListener,
         Insettable {
     private static final String TAG = "Launcher.Workspace";
+    
+    private ContentResolver cr;
 
     // Y rotation to apply to the workspace screens
     private static final float WORKSPACE_OVERSCROLL_ROTATION = 24f;
@@ -284,6 +288,7 @@ public class Workspace extends SmoothPagedView
      */
     public Workspace(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
+        cr = context.getContentResolver();
     }
 
     /**
@@ -296,7 +301,7 @@ public class Workspace extends SmoothPagedView
     public Workspace(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mContentIsRefreshable = false;
-
+        cr = context.getContentResolver();
         mOutlineHelper = HolographicOutlineHelper.obtain(context);
 
         mDragEnforcer = new DropTarget.DragEnforcer(context);
@@ -319,9 +324,7 @@ public class Workspace extends SmoothPagedView
         mCameraDistance = res.getInteger(R.integer.config_cameraDistance);
 
         mOriginalDefaultPage = mDefaultPage =
-                PreferenceManager.getDefaultSharedPreferences(context)
-                        .getInt(LauncherPreferences.KEY_WORKSPACE_DEFAULT_PAGE,
-                                a.getInt(R.styleable.Workspace_defaultScreen, 0));
+                Settings.System.getInt(cr, "pref_key_workspaceDefaultPage", 0);
 
         a.recycle();
 

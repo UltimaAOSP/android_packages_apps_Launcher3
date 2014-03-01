@@ -245,6 +245,7 @@ public class Launcher extends Activity
     private boolean mAutoAdvanceRunning = false;
     private View mQsbBar;
 
+    private Context mContext;
     private Bundle mSavedState;
     // We set the state in both onCreate and then onNewIntent in some cases, which causes both
     // scroll issues (because the workspace may not have been measured yet) and extra work.
@@ -318,6 +319,8 @@ public class Launcher extends Activity
     // We only want to get the SharedPreferences once since it does an FS stat each time we get
     // it from the context.
     private SharedPreferences mSharedPrefs;
+    
+    private ContentResolver cr;
 
     private static ArrayList<ComponentName> mIntentsOnWorkspaceFromUpgradePath = null;
 
@@ -377,9 +380,10 @@ public class Launcher extends Activity
                     .penaltyDeath()
                     .build());
         }
-
+        
         super.onCreate(savedInstanceState);
-
+        mContext = this;
+        cr = mContext.getContentResolver();
         LauncherAppState.setApplicationContext(getApplicationContext());
         LauncherAppState app = LauncherAppState.getInstance();
 
@@ -431,9 +435,6 @@ public class Launcher extends Activity
 
         setupViews();
         grid.layout(this);
-
-        PreferenceManager.getDefaultSharedPreferences(this)
-                .registerOnSharedPreferenceChangeListener(mSharedPreferencesObserver);
 
         registerContentObservers();
 
@@ -983,11 +984,7 @@ public class Launcher extends Activity
     }
 
     protected void startSettings() {
-       Intent i = new Intent(this, LauncherPreferencesActivity.class);
-       startActivity(i);
-       if (mWorkspace.isInOverviewMode()) {
-           mWorkspace.exitOverviewMode(false);
-       }
+        startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), 0);
     }
 
     public interface QSBScroller {
@@ -1756,26 +1753,9 @@ public class Launcher extends Activity
     }
 
 
-    private final OnSharedPreferenceChangeListener mSharedPreferencesObserver = new OnSharedPreferenceChangeListener() {
-		@Override
-		public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-				String key) {
-
-			if(LauncherPreferences.isLauncherPreference(key)) {
-				if(!isFinishing()) {
-					Launcher.this.
-					recreate();
-				}
-			}
-		}
-	};
-
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        PreferenceManager.getDefaultSharedPreferences(this)
-                .unregisterOnSharedPreferenceChangeListener(mSharedPreferencesObserver);
 
         // Remove all pending runnables
         mHandler.removeMessages(ADVANCE_MSG);
@@ -4094,9 +4074,7 @@ public class Launcher extends Activity
     }
 
     public boolean isRotationEnabled() {
-        boolean enableRotation = sForceEnableRotation ||
-                getResources().getBoolean(R.bool.allow_rotation);
-        return enableRotation;
+        return Settings.System.getInt(cr, "pref_key_enableRotation", 0) != 0;
     }
     public void lockScreenOrientation() {
         if (isRotationEnabled()) {
