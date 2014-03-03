@@ -80,17 +80,16 @@ public class WallpaperCropActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        init(this);
+        init();
         if (!enableRotation()) {
             setRequestedOrientation(Configuration.ORIENTATION_PORTRAIT);
         }
     }
 
-    protected void init(Context context) {
+    protected void init() {
         setContentView(R.layout.wallpaper_cropper);
 
         mCropView = (CropView) findViewById(R.id.cropView);
-        cr = context.getContentResolver();
         Intent cropIntent = getIntent();
         final Uri imageUri = cropIntent.getData();
 
@@ -118,7 +117,7 @@ public class WallpaperCropActivity extends Activity {
     }
 
     public boolean enableRotation() {
-        return Settings.System.getInt(cr, "pref_key_enableRotation", 0) != 0;
+        return Settings.System.getInt(getContentResolver(), "pref_key_enableRotation", 0) != 0;
     }
 
     public static String getSharedPreferencesKey() {

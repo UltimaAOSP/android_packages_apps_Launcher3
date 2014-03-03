@@ -480,7 +480,7 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
     }
 
     public boolean enableRotation() {
-        return super.enableRotation() || Launcher.sForceEnableRotation;
+        return super.enableRotation();
     }
 
     protected Bitmap getThumbnailOfLastPhoto() {
