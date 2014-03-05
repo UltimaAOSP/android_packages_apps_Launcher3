@@ -19,8 +19,8 @@
 
     <!-- Left screen [1] -->
     <appwidget
-        launcher:packageName="com.android.deskclock"
-        launcher:className="com.android.alarmclock.DigitalAppWidgetProvider"
+        launcher:packageName="com.dvtonder.chronus"
+        launcher:className="com.dvtonder.chronus.ClockWidgetProvider"
         launcher:screen="1"
         launcher:x="0"
         launcher:y="0"
