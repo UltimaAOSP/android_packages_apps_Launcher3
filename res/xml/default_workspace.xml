@@ -38,15 +38,16 @@
         launcher:screen="1"
         launcher:x="1"
         launcher:y="3" />
+    
     <favorite
-        launcher:packageName="com.android.settings"
-        launcher:className="com.android.settings.Settings"
+        launcher:packageName="com.dnielfe.manager"
+        launcher:className="com.dnielfe.manager.Browser"
         launcher:screen="1"
         launcher:x="2"
         launcher:y="3" />
     <favorite
-        launcher:packageName="com.ultima.settings"
-        launcher:className="com.ultima.settings.SettingsActivity"
+        launcher:packageName="com.android.settings"
+        launcher:className="com.android.settings.Settings"
         launcher:screen="1"
         launcher:x="3"
         launcher:y="3" />
